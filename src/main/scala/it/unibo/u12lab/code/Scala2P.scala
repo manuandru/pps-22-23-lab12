@@ -56,13 +56,3 @@ object TryScala2P extends App:
   val input = new Struct("permutation",(1 to 20), Var.anonymous())
   engine(input) map (extractTerm(_,1)) take 100 foreach (println(_))
   // [1,2,3,4,..,20] ... [1,2,..,15,20,16,18,19,17]
-
-  val ttt = TicTacToeImpl("/ttt.pl")
-  ttt.createBoard()
-  println(ttt)
-  ttt.setHumanCell(1,1)
-  println(ttt)
-  ttt.setComputerCell()
-  println(ttt)
-  println(ttt.checkVictory())
-
