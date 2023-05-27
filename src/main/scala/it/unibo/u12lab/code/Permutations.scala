@@ -15,12 +15,20 @@ object Permutations extends App:
   // now let's do permutations
   // fill this method remove such that it works as of the next println
   // - check e.g. how method "List.split" works
-  def removeAtPos[A](list:List[A], n:Int) = ???
+  def removeAtPos[A](list: List[A], n: Int): List[A] =
+    val splitted = list.splitAt(n)
+    splitted._1 ::: splitted._2.tail
   println(removeAtPos(List(10,20,30,40),1)) // 10,30,40
 
   def permutations[A](list: List[A]): LazyList[List[A]] = list match
     case Nil => LazyList(Nil)
-    case _ => ???
+    case _ =>
+      for
+        i <- list.indices.to(LazyList)
+        e = list(i)
+        r = removeAtPos(list, i)
+        pr <- permutations(r)
+      yield e :: pr
     /* here a for comprehension that:
        - makes i range across all indexes of list (converted as stream)
        - assigns e to element at position i
