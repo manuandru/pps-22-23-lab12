@@ -52,3 +52,18 @@ foldright([H|T], D, OP, R) :- foldright(T, D, OP, O), copy_term(OP, op(H, O, Cop
 % map with foldright
 % map2([10,20,30], mapper(X, Y, Y is X+1), L). -> L / [11,21,31]
 map2(L, M, R) :- foldright(L, [], op(H, T, (copy_term(M, mapper(H, H2, OP)), call(OP), O = [H2|T]), O), R).
+
+
+
+% filter with foldright
+% filter2([10,20,30], predicate(X, X > 10), L). -> L / [20,30]
+%filter2(L, P, R) :- foldright(L, [], op(H, T, test(P, H, T, O), O), R).
+
+test(P, H, T, O) :- copy_term(P, predicate(H, Test)), call(Test), O = [H|T], !.
+test(_, _, T, T).
+
+% using ; operator, we achive same result.
+% filter2(L, P, R) :- 
+% 	foldright(L, [], 
+% 		op(H, T, ((copy_term(P, predicate(H, Test)), call(Test), O = [H|T], !) ; O=T), O), 
+% 		R).
