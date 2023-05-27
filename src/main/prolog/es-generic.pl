@@ -63,9 +63,9 @@ test(P, H, T, O) :- copy_term(P, predicate(H, Test)), call(Test), O = [H|T], !.
 test(_, _, T, T).
 
 % using ; operator, we achive same result.
-% filter2(L, P, R) :- 
-% 	foldright(L, [], 
-% 		op(H, T, ((copy_term(P, predicate(H, Test)), call(Test), O = [H|T], !) ; O=T), O), 
+% filter2(L, P, R) :-
+% 	foldright(L, [],
+% 		op(H, T, ((copy_term(P, predicate(H, Test)), call(Test), O = [H|T], !) ; O=T), O),
 % 		R).
 
 
