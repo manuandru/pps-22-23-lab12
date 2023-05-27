@@ -27,11 +27,22 @@ reduce([H|T], Acc, Op, R) :- copy_term(Op, op(H, Acc, CopyOP, O)), call(CopyOP),
 
 
 
-% foldleft(+L, +Acc, +OP, -O)
-% where Acc is the default value
+% foldleft(+L, +D, +OP, -O)
+% where D is the default value
 % where OP=op(I1, I2, BINARY_OP, O)
 % e.g. OP=op(X, Y, O is X + Y, O)
 % foldleft([10, 20, 30], 0, op(X, Y, O is X + Y, O), R). -> R / 60
 % foldleft([10, 20, 30], [],op(H, T, O = [H|T], O), R). -> R / [30, 20, 10]
 foldleft([], Acc, _, Acc).
-foldleft([H|T], Acc, Op, R) :- copy_term(Op, op(H, Acc, CopyOP, O)), call(CopyOP), foldleft(T, O, Op, R).
+foldleft([H|T], Acc, OP, R) :- copy_term(OP, op(H, Acc, CopyOP, O)), call(CopyOP), foldleft(T, O, OP, R).
+
+
+
+% foldright(+L, +D, +OP, -O)
+% where D is the default value
+% where OP=op(I1, I2, BINARY_OP, O)
+% e.g. OP=op(X, Y, O is X + Y, O)
+% foldright([10, 20, 30], 0, op(X, Y, O is X + Y, O), R). -> R / 60
+% foldright([10, 20, 30], 0, op(X, Y, O is X - Y, O), R). -> R / 20
+foldright([], D, _, D).
+foldright([H|T], D, OP, R) :- foldright(T, D, OP, O), copy_term(OP, op(H, O, CopyOP, R)), call(CopyOP).
