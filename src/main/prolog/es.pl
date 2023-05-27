@@ -46,3 +46,9 @@ foldleft([H|T], Acc, OP, R) :- copy_term(OP, op(H, Acc, CopyOP, O)), call(CopyOP
 % foldright([10, 20, 30], 0, op(X, Y, O is X - Y, O), R). -> R / 20
 foldright([], D, _, D).
 foldright([H|T], D, OP, R) :- foldright(T, D, OP, O), copy_term(OP, op(H, O, CopyOP, R)), call(CopyOP).
+
+
+
+% map with foldright
+% map2([10,20,30], mapper(X, Y, Y is X+1), L). -> L / [11,21,31]
+map2(L, M, R) :- foldright(L, [], op(H, T, (copy_term(M, mapper(H, H2, OP)), call(OP), O = [H2|T]), O), R).
