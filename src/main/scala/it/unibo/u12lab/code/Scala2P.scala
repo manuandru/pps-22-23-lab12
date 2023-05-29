@@ -2,6 +2,8 @@ package it.unibo.u12lab.code
 
 import alice.tuprolog.*
 
+import scala.Tuple
+
 object Scala2P:
 
   def extractTerm(solveInfo:SolveInfo, i:Integer): Term =
@@ -44,15 +46,59 @@ object TryScala2P extends App:
   import Scala2P.{*, given}
 
   val engine: Term => LazyList[SolveInfo] = mkPrologEngine("""
-    member([H|T],H,T).
-    member([H|T],E,[H|T2]):- member(T,E,T2).
-    permutation([],[]).
-    permutation(L,[H|TP]) :- member(L,H,T), permutation(T,TP).
+    goal(s(3,3)).
+    move(down, s(X, Y), s(X2, Y)) :- X>0, X2 is X-1.
+    move(up, s(X, Y), s(X2, Y)) :- X<3, X2 is X+1.
+    move(left, s(X, Y), s(X, Y2)) :- Y>0, Y2 is Y-1.
+    move(right, s(X, Y), s(X, Y2)) :- Y<3, Y2 is Y+1.
+    plan(0, P, []) :- !, goal(P).
+    plan(_, P, []) :- goal(P), !.
+    plan(N, Pos, [D|T]) :-
+      move(D, Pos, NewPos),
+      N2 is N - 1,
+      plan(N2, NewPos, T).
   """)
 
-  engine("permutation([1,2,3],L)") foreach (println(_))
-  // permutation([1,2,3],[1,2,3]) ... permutation([1,2,3],[3,2,1])
 
-  val input = new Struct("permutation",(1 to 20), Var.anonymous())
-  engine(input) map (extractTerm(_,1)) take 100 foreach (println(_))
-  // [1,2,3,4,..,20] ... [1,2,..,15,20,16,18,19,17]
+  engine("plan(8, s(0,0), R)") foreach { solveInfo =>
+    val solList = solveInfo.getTerm("R").toString
+      .replace("[", "")
+      .replace("]", "")
+      .split(",")
+    import Utility.*
+    var position = (0,0)
+    println(solList.mkString("Solution = (", ",", ")")) // solution is upside-down due to prolog impl
+    printPositionInBoard(position)
+    solList.foreach(cmd =>
+      position = cmd match
+        case "up" => position.moveUp
+        case "down" => position.moveDown
+        case "right" => position.moveRight
+        case "left" => position.moveLeft
+      printPositionInBoard(position)
+    )
+    println("===================")
+  }
+
+object Utility:
+  // quick and dirty solution...
+  def printPositionInBoard(position: (scala.Int, scala.Int)): Unit =
+    for
+      x <- 0 to 3
+      y <- 0 to 3
+    do
+      if y == 0 then print("\n|")
+      if Tuple2(x,y) == position then print("R|")
+      else print(" |")
+    println()
+
+  extension (t: (scala.Int, scala.Int))
+    def moveUp: (scala.Int, scala.Int) = (t._1+1, t._2)
+    def moveDown: (scala.Int, scala.Int) = (t._1-1, t._2)
+    def moveRight: (scala.Int, scala.Int) = (t._1, t._2+1)
+    def moveLeft: (scala.Int, scala.Int) = (t._1, t._2-1)
+
+
+
+
+
